@@ -123,7 +123,7 @@ __xdata static volatile u8 ni = 0;
 __xdata DMA_DESC dmaConfig;
 __xdata u8 realbuf[MAXLEN+1];
 __bit sleepy = 0;
-__bit txFast = 0;
+__bit txFast = 1; //Allows control of the screen for debug data -Gallyus
 
 extern u8 _garage_id = 0;
 
@@ -214,13 +214,14 @@ int main(void)
 		title;
 		//        "123456789 123456789 1"
 		// TODO: make this stuff actually selectable
-		printl(2, "Frequency");
+		/*printl(2, "Frequency");
 		printrlc(2, 21-5, "Auto");
 		printl(3, "Baud rate");
 		printrlc(3, 21-5, "Auto");
 		printl(4, "Bits");
 		printrlc(4, 21-5, "Auto");
-
+		*/
+		printl(2, "!!Ready!!");
 		// TODO: make this not a loop and use interrupts instead to catch keys
 //		while (getkey() != ' ');
 		while (1)
@@ -271,19 +272,28 @@ void rf_isr_orig() __interrupt (RF_VECTOR)
 	// go idle again
 	RFST = RFST_SIDLE;
 	LED_RED = HIGH; // turn red led off
+	//Do a debug print
+	printl(3, "INTERRUPT: TX COMPLETE");
 }
 
 // transmit that badboy
 void rftx()
 {
+	//Bastard stubbed the entire function, guess I actually have to learn things today. -Gallyus
+
 	// wait for previous transmission to finish (if any)
 	waitForTx();
 
 	txdone = 0;
 	LED_GREEN = HIGH; // turn green led off
 	LED_RED = LOW; // turn red led on
+	clear();
+	printl(6, "rftx Called");
+	printl(1, "Debug Info:");
+	//printrl(2, g.hz);
+	//Let's try messily cpasting this...
+	RFST = RFST_STX;
 
-	// ...
 }
 
 // show nyancat while transmitting

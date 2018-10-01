@@ -5,6 +5,7 @@
 // http://samy.pl/opensesame
 
 #include "types.h"
+#include "ioCCxx10_bitdef.h"
 #ifndef LOCAL
 #include <cc1110.h>
 #endif
@@ -195,6 +196,10 @@ void setBaud()
 // may prevent the de bruijn exploit from working
 void doTx()
 {
+	EA = 1; // enable interrupts globally
+	IEN2 |= IEN2_RFIE; // enable RF interrupt
+	RFIM = RFIM_IM_DONE; // mask IRQ_DONE only
+	DMAARM |= DMAARM0; // Arm DMA channel 0
 	// don't modify realbuf until we're done transmitting
 	// previous data since we're using DMA to TX
 	waitForTx();
@@ -220,7 +225,6 @@ void db_send()
 		PA_TABLE1 = 0xC2;
 	else
 		PA_TABLE1 = 0xC0;
-
 	// set frequency
 	setFreq();
 	CHANNR = 0x00;
